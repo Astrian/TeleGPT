@@ -163,6 +163,8 @@ bot.on('message:text', async (ctx) => {
   if (!await functions.user_limit(ctx.from?.id ?? 0)) return ctx.reply('You are not allowed to use this bot.')
 
   try {
+    // Send "typing" action
+    bot.api.sendChatAction(ctx.chat?.id ?? 0, 'typing')
     let response = await functions.new_message(ctx.message?.text ?? '', ctx.from?.id ?? 0)
     ctx.reply(response)
   } catch (err) {
