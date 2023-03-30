@@ -65,7 +65,7 @@ bot.command('list', async (ctx) => {
         callback_data: `select:${threads[thread].id}`
       }])
     }
-    
+    if (thread_list.length === 0) return ctx.reply('You have no threads yet. Use /newthread to create a new thread.')
     ctx.reply("Select a thread", { reply_markup: { inline_keyboard: thread_list } })
   } catch (err) {
     print(err)
@@ -96,12 +96,12 @@ bot.on('callback_query', async (ctx) => {
     case 'select':
       // Change message into thread operation inline markup keyboard
       try {
-        bot.api.editMessageText(
+        await bot.api.editMessageText(
           ctx.callbackQuery?.message?.chat.id ?? 0,
           ctx.callbackQuery?.message?.message_id ?? 0,
           `Selected thread: ${thread_name}`
         )
-        bot.api.editMessageReplyMarkup(
+        await bot.api.editMessageReplyMarkup(
           ctx.callbackQuery?.message?.chat.id ?? 0,
           ctx.callbackQuery?.message?.message_id ?? 0,
           {reply_markup: {
@@ -153,6 +153,40 @@ bot.on('callback_query', async (ctx) => {
         )
       } catch(e) {
         print(e)
+        return ctx.reply('Oops, something went wrong.')
+      }
+      break
+
+    case 'list':
+      // List threads
+      try {
+        let threads = await functions.list_threads(ctx.from?.id ?? 0)
+        let thread_list: {text: string, callback_data: string}[][] = []
+        for (let thread in threads) {
+          thread_list.push([{
+            text: threads[thread].topic,
+            callback_data: `select:${threads[thread].id}`
+          }])
+        }
+        
+        // ctx.reply("Select a thread", { reply_markup: { inline_keyboard: thread_list } })
+        if (thread_list.length === 0) return await bot.api.editMessageText(
+          ctx.callbackQuery?.message?.chat.id ?? 0,
+          ctx.callbackQuery?.message?.message_id ?? 0,
+          'You have no threads yet. Use /newthread to create a new thread.'
+        )
+        await bot.api.editMessageText(
+          ctx.callbackQuery?.message?.chat.id ?? 0,
+          ctx.callbackQuery?.message?.message_id ?? 0,
+          'Select a thread'
+        )
+        await bot.api.editMessageReplyMarkup(
+          ctx.callbackQuery?.message?.chat.id ?? 0,
+          ctx.callbackQuery?.message?.message_id ?? 0,
+          {reply_markup: { inline_keyboard: thread_list }}
+        )
+      } catch (err) {
+        print(err)
         return ctx.reply('Oops, something went wrong.')
       }
   }
