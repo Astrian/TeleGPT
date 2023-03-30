@@ -13,7 +13,10 @@ const inline_query = async (content: string, name: string): Promise<string> => {
   // Organize messages
   let messages: Message[] = [{
     role: 'system',
-    content: `A user named “${name}” called you in an IM conversations, you are replying to this user.`
+    content: `A user named “${name}” called you in an IM conversations with inline calling feature, you are replying to this user.`
+  },{
+    role: 'system',
+    content: `Note that the inline calling feature has request time limit, so your answer should as short as possible.`
   }, {
     role: 'user',
     content
