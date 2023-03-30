@@ -207,5 +207,33 @@ bot.on('message:text', async (ctx) => {
   }
 })
 
+bot.on('inline_query', async (ctx) => {
+  // User limit
+  if (!await functions.user_limit(ctx.from?.id ?? 0)) return ctx.answerInlineQuery([])
+  print('Inline Query')
+
+  // Get inline query
+  try {
+    let response = await functions.inline_query(ctx.inlineQuery?.query ?? '',  `${ctx.from?.first_name}${ctx.from?.last_name ? ' ' + ctx.from?.last_name : ''}}`)
+    if (ctx.inlineQuery?.query === undefined || ctx.inlineQuery?.query === "") return ctx.answerInlineQuery([])
+    ctx.answerInlineQuery([{
+      type: 'article',
+      id: '1',
+      title: 'Reply from GPT...',
+      input_message_content: {
+        message_text: `<b>Q: ${ctx.inlineQuery?.query ?? ''}</b>\nA: ${response}`,
+        parse_mode: 'HTML'
+      },
+      description: response,
+    }],
+    {
+      cache_time: 0
+    })
+  } catch (err) {
+    print(err)
+    return ctx.answerInlineQuery([])
+  }
+})
+
 // Start bot
 bot.start()
