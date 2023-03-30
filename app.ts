@@ -12,6 +12,9 @@ const bot = new Bot(process.env.TELEGPT_TELEGRAM_TOKEN ?? "")
 const print = Debug('telegpt:app.ts')
 
 bot.command('start', async (ctx) => {
+  // User limit
+  if (!await functions.user_limit(ctx.from?.id ?? 0)) return ctx.reply('You are not allowed to use this bot.')
+
   print('Hello World!')
   // Create user
   try {
@@ -24,6 +27,9 @@ bot.command('start', async (ctx) => {
 })
 
 bot.command('newthread', async (ctx) => {
+  // User limit
+  if (!await functions.user_limit(ctx.from?.id ?? 0)) return ctx.reply('You are not allowed to use this bot.')
+
   print('New Thread')
   
   // Get thread name from message
@@ -44,6 +50,9 @@ bot.command('newthread', async (ctx) => {
 })
 
 bot.command('list', async (ctx) => {
+  // User limit
+  if (!await functions.user_limit(ctx.from?.id ?? 0)) return ctx.reply('You are not allowed to use this bot.')
+  
   print('List Threads')
   // list all threads to user
   try {
@@ -64,6 +73,9 @@ bot.command('list', async (ctx) => {
 })
 
 bot.on('callback_query', async (ctx) => {
+  // User limit
+  if (!await functions.user_limit(ctx.from?.id ?? 0)) return ctx.reply('You are not allowed to use this bot.')
+
   print('Callback Query')
   // Get callback data
   const callback_data = ctx.callbackQuery?.data?.split(':')
@@ -146,6 +158,9 @@ bot.on('callback_query', async (ctx) => {
 })
 
 bot.on('message:text', async (ctx) => {
+  // User limit
+  if (!await functions.user_limit(ctx.from?.id ?? 0)) return ctx.reply('You are not allowed to use this bot.')
+
   try {
     let response = await functions.new_message(ctx.message?.text ?? '', ctx.from?.id ?? 0)
     ctx.reply(response)
