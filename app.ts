@@ -36,9 +36,20 @@ bot.command('newthread', async (ctx) => {
   // Create thread
     print(ctx.from)
     await functions.create_thread(thread_name, ctx.from?.id ?? 0, `${ctx.from?.first_name ?? 'Unknown'}${ctx.from?.last_name ? ' ' + ctx.from?.last_name : ''}`)
+    ctx.reply('Thread created! Now your active thread is switched, and you can start a fresh-new chatting.')
   } catch (err) {
     print(err)
     return ctx.reply('Cannot create thread, please try again.')
+  }
+})
+
+bot.on(':text', async (ctx) => {
+  try {
+    let response = await functions.new_message(ctx.message?.text ?? '', ctx.from?.id ?? 0)
+    ctx.reply(response)
+  } catch (err) {
+    print(err)
+    return ctx.reply('Oops, something went wrong.')
   }
 })
 
