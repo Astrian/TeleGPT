@@ -8,10 +8,13 @@
     "@types/debug": "^4.1.7",
     "@types/dotenv": "^8.2.0",
     "@types/node": "^18.15.11",
+    "@types/uuid": "^9.0.1",
     "debug": "^4.3.4",
     "dotenv": "^16.0.3",
     "grammy": "^1.15.3",
-    "typescript": "^5.0.2"
+    "sqlite3": "^5.1.6",
+    "typescript": "^5.0.2",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.22",
