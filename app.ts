@@ -43,7 +43,109 @@ bot.command('newthread', async (ctx) => {
   }
 })
 
-bot.on(':text', async (ctx) => {
+bot.command('list', async (ctx) => {
+  print('List Threads')
+  // list all threads to user
+  try {
+    let threads = await functions.list_threads(ctx.from?.id ?? 0)
+    let thread_list: {text: string, callback_data: string}[][] = []
+    for (let thread in threads) {
+      thread_list.push([{
+        text: threads[thread].topic,
+        callback_data: `select:${threads[thread].id}`
+      }])
+    }
+    
+    ctx.reply("Select a thread", { reply_markup: { inline_keyboard: thread_list } })
+  } catch (err) {
+    print(err)
+    return ctx.reply('Oops, something went wrong.')
+  }
+})
+
+bot.on('callback_query', async (ctx) => {
+  print('Callback Query')
+  // Get callback data
+  const callback_data = ctx.callbackQuery?.data?.split(':')
+  if (callback_data === undefined) return ctx.reply('Oops, something went wrong.')
+  print(callback_data)
+  // Get thread name
+  let thread_list = await functions.list_threads(ctx.from?.id ?? 0)
+  let thread_name = ''
+  for (let thread in thread_list) {
+    if (thread_list[thread].id === callback_data[1]) {
+      thread_name = thread_list[thread].topic
+      break
+    }
+  }
+
+  switch (callback_data[0]) {
+    case 'select':
+      // Change message into thread operation inline markup keyboard
+      try {
+        bot.api.editMessageText(
+          ctx.callbackQuery?.message?.chat.id ?? 0,
+          ctx.callbackQuery?.message?.message_id ?? 0,
+          `Selected thread: ${thread_name}`
+        )
+        bot.api.editMessageReplyMarkup(
+          ctx.callbackQuery?.message?.chat.id ?? 0,
+          ctx.callbackQuery?.message?.message_id ?? 0,
+          {reply_markup: {
+            inline_keyboard: [
+              [{
+                text: 'Delete',
+                callback_data: `delete:${callback_data[1]}`
+              },
+              {
+                text: 'Switch',
+                callback_data: `switch:${callback_data[1]}`
+              }],
+              [{
+                text: 'Cancel',
+                callback_data: 'list'
+              }]
+            ]
+          }
+        })
+      } catch (err) {
+        print(err)
+        return ctx.reply('Oops, something went wrong.')
+      }
+      break
+    
+    case 'delete':
+      // Delete thread
+      try {
+        await functions.delete_thread(callback_data[1])
+        bot.api.editMessageText(
+          ctx.callbackQuery?.message?.chat.id ?? 0,
+          ctx.callbackQuery?.message?.message_id ?? 0,
+          `Deleted thread: ${thread_name}`
+        )
+      } catch(e) {
+        print(e)
+        return ctx.reply('Oops, something went wrong.')
+      }
+      break
+    
+    case 'switch':
+      // Switch thread
+      try {
+        await functions.switch_thread(callback_data[1], ctx.from?.id ?? 0)
+        bot.api.editMessageText(
+          ctx.callbackQuery?.message?.chat.id ?? 0,
+          ctx.callbackQuery?.message?.message_id ?? 0,
+          `Switched thread: ${thread_name}`
+        )
+      } catch(e) {
+        print(e)
+        return ctx.reply('Oops, something went wrong.')
+      }
+  }
+})
+
+bot.on('message:text', async (ctx) => {
   try {
     let response = await functions.new_message(ctx.message?.text ?? '', ctx.from?.id ?? 0)
     ctx.reply(response)

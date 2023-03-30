@@ -7,7 +7,7 @@ import * as uuid from 'uuid'
 import axios from 'axios'
 
 // Initial packages
-const print = Debug('telegpt:functions/create_thread.ts')
+const print = Debug('telegpt:functions/new_message.ts')
 const db = new sqlite3.Database('./data.db')
 
 // Transfer sqlite3 to promise
@@ -31,6 +31,10 @@ const new_message = async (content: string, sender: number): Promise<string> => 
     return ''
   }
   const active_thread = user_data[0].active_thread
+  // Check if user has active thread
+  if (active_thread === '') {
+    return 'Please select or create a thread first.'
+  }
 
   // Fetch messages from active thread
   const history_messages = await db_promise('SELECT * FROM messages WHERE thread = ?', [active_thread])
@@ -51,7 +55,7 @@ const new_message = async (content: string, sender: number): Promise<string> => 
     content: content
   })
   print(messages)
-  
+
   let response = await axios.post('https://api.openai.com/v1/chat/completions', {
     model: "gpt-3.5-turbo-0301",
     messages
