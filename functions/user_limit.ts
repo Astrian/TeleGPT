@@ -8,12 +8,15 @@ dotenv.config()
 
 const user_limit = async (sender: number): Promise<Boolean> => {
   // Check if user is available for use this bot
-  process.env.TELEGPT_LIMIT_USER?.split(',').forEach((user) => {
-    if (user === sender.toString()) {
-      return true
+  let allowed_user = process.env.TELEGPT_LIMIT_USER?.split(',') ?? []
+  let allowed = false
+  for (let i = 0; i < (allowed_user?.length ?? 0); i++) {
+    if (allowed_user[i] === sender.toString()) {
+      allowed = true
+      break
     }
-  })
-  return false
+  }
+  return allowed
 }
 
 export { user_limit }

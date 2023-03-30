@@ -13,6 +13,7 @@ const print = Debug('telegpt:app.ts')
 
 bot.command('start', async (ctx) => {
   // User limit
+  print(await functions.user_limit(ctx.from?.id ?? 0))
   if (!await functions.user_limit(ctx.from?.id ?? 0)) return ctx.reply('You are not allowed to use this bot.')
 
   print('Hello World!')
@@ -52,7 +53,7 @@ bot.command('newthread', async (ctx) => {
 bot.command('list', async (ctx) => {
   // User limit
   if (!await functions.user_limit(ctx.from?.id ?? 0)) return ctx.reply('You are not allowed to use this bot.')
-  
+
   print('List Threads')
   // list all threads to user
   try {
