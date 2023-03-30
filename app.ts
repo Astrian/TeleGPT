@@ -214,7 +214,7 @@ bot.on('inline_query', async (ctx) => {
 
   // Get inline query
   try {
-    let response = await functions.inline_query(ctx.inlineQuery?.query ?? '',  `${ctx.from?.first_name}${ctx.from?.last_name ? ' ' + ctx.from?.last_name : ''}}`)
+    let response = await functions.inline_query(ctx.inlineQuery?.query ?? '',  `${ctx.from?.first_name}${ctx.from?.last_name ? ' ' + ctx.from?.last_name : ''}`)
     if (ctx.inlineQuery?.query === undefined || ctx.inlineQuery?.query === "") return ctx.answerInlineQuery([])
     ctx.answerInlineQuery([{
       type: 'article',
