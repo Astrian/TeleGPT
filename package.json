@@ -1,0 +1,23 @@
+{
+  "name": "telegpt",
+  "version": "1.0.0",
+  "main": "app.ts",
+  "author": "Astrian Zheng <happy.wheel6743@astrian.moe>",
+  "license": "MIT",
+  "dependencies": {
+    "@types/debug": "^4.1.7",
+    "@types/dotenv": "^8.2.0",
+    "@types/node": "^18.15.11",
+    "debug": "^4.3.4",
+    "dotenv": "^16.0.3",
+    "grammy": "^1.15.3",
+    "typescript": "^5.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22",
+    "ts-node": "^10.0.0"
+  },
+  "scripts": {
+    "dev": "DEBUG=telegpt:* nodemon app.ts"
+  }
+}
